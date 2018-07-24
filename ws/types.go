@@ -10,3 +10,9 @@ type Command struct {
 	Entrypoint  []string `json:"entrypoint"`
 	Type        string   `json:"type"`
 }
+
+// ClientDebugMessage stores the data received from user
+type ClientDebugMessage struct {
+	BreakPoints []string
+	Command     string
+}
