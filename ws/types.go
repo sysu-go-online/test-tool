@@ -13,6 +13,6 @@ type Command struct {
 
 // ClientDebugMessage stores the data received from user
 type ClientDebugMessage struct {
-	BreakPoints []string
+	BreakPoints string
 	Command     string
 }

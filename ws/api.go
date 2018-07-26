@@ -3,6 +3,7 @@ package ws
 import (
 	"fmt"
 	"net/url"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -33,17 +34,30 @@ func TestAPIDebug() {
 	}()
 
 	clientmsg := ClientDebugMessage{
-		Command: "run",
-		BreakPoints: []string{"main.cpp:6"},
+		Command:     "set",
+		BreakPoints: "main.cpp:6",
 	}
 	conn.WriteJSON(&clientmsg)
-	// clientmsg.Command = "run"
-	// conn.WriteJSON(&clientmsg)
-	// clientmsg.Command = "next"
-	// conn.WriteJSON(&clientmsg)
-	// clientmsg.Command = "continue"
-	// conn.WriteJSON(&clientmsg)
-	clientmsg.Command = "finish"
+
+	timer := time.NewTimer(3 * time.Second)
+	time.NewTimer(5 * time.Second)
+	<-timer.C
+	clientmsg.Command = "run"
+	conn.WriteJSON(&clientmsg)
+
+	timer = time.NewTimer(3 * time.Second)
+	<-timer.C
+	clientmsg.Command = "next"
+	conn.WriteJSON(&clientmsg)
+
+	timer = time.NewTimer(3 * time.Second)
+	<-timer.C
+	clientmsg.Command = "continue"
+	conn.WriteJSON(&clientmsg)
+
+	timer = time.NewTimer(3 * time.Second)
+	<-timer.C
+	clientmsg.Command = "quit"
 	conn.WriteJSON(&clientmsg)
 	<-stopChan
 }
