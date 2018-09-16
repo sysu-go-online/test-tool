@@ -59,5 +59,41 @@ func TestAPIDebug() {
 	<-timer.C
 	clientmsg.Command = "quit"
 	conn.WriteJSON(&clientmsg)
+
+	<-stopChan
+}
+
+// TestAPITTY test tty service in api service
+func TestAPITTY() {
+	addr := "localhost"
+	port := ":8080"
+	addr = addr + port
+	url := url.URL{Scheme: "ws", Host: addr, Path: "/ws/tty"}
+	conn, _, err := websocket.DefaultDialer.Dial(url.String(), nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	stopChan := make(chan bool, 1)
+	go func() {
+		for {
+			_, msg, err := conn.ReadMessage()
+			if err != nil {
+				fmt.Println(err)
+				stopChan <- true
+				return
+			}
+			fmt.Print(string(msg))
+		}
+	}()
+
+	clientmsg := ClientTTYMessage{
+		Command: "ls",
+		Project: "projectName",
+		JWT:     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MzkxNzE1NTEsImlhdCI6MTUzNjU3OTU1MSwianRpIjoiYmViNWZudnU4OTJiOTJrYjgwaTAiLCJzdWIiOiJ0eHpkcmVhbSJ9.cHbzTDRHFDjAWSJTjy7kG43vQSXjaxmWys4_wbAfYK4",
+	}
+	conn.WriteJSON(&clientmsg)
+
 	<-stopChan
 }

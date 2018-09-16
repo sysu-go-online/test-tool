@@ -16,3 +16,10 @@ type ClientDebugMessage struct {
 	BreakPoints string
 	Command     string
 }
+
+// ClientTTYMessage stores the data received from user
+type ClientTTYMessage struct {
+	Command string
+	Project string
+	JWT     string
+}
